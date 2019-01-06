@@ -23,7 +23,7 @@ class MealControllerAPI extends Controller
   }
 
   public function getAllMeals(Request $request){
-    return MealResource::collection(Meal::all());
+    return MealResource::collection(Meal::paginate(10));
   }
 
   public function getUserMeals($id){
@@ -33,17 +33,17 @@ class MealControllerAPI extends Controller
         $meals = MealResource::collection(Meal::where([
           ['state', 'active'],
           ['responsible_waiter_id', $id]
-          ])->get());
+          ])->paginate(10));
           return $meals;
     }elseif($user->type == 'manager'){
-      return MealResource::collection(Meal::orderBy('state', 'asc')->get());
+      return MealResource::collection(Meal::orderBy('state', 'asc')->paginate(10));
     }
 
   }
 
   public function getMeal($id){ //$id da meal
     $meal = Meal::findOrFail($id);
-    $orders = OrderResource::collection(Order::where('meal_id', $id)->get());
+    $orders = OrderResource::collection(Order::where('meal_id', $id)->paginate(10));
     $price = 0;
     foreach ($orders as $order) {
       $item = Item::findOrFail($order->item_id);
@@ -57,7 +57,7 @@ class MealControllerAPI extends Controller
 
   public function getMealItems($id){
     $items = [];
-    $orders = OrderResource::collection(Order::where('meal_id', $id)->get());
+    $orders = OrderResource::collection(Order::where('meal_id', $id)->paginate(10));
     foreach ($orders as $order) {
       $items[] = Item::findOrFail($order->item_id);
     }
@@ -65,7 +65,7 @@ class MealControllerAPI extends Controller
   }
 
   public function getMealOrders($id){
-    $orders = OrderResource::collection(Order::where('meal_id', $id)->get());
+    $orders = OrderResource::collection(Order::where('meal_id', $id)->paginate(10));
     return $orders;
   }
 
