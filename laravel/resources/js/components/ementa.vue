@@ -35,7 +35,7 @@
       return{
         title:'Menu',
         items: [],
-        user: {},
+        user:{},
         addingItem: false,
         showingEmenta: true,
         editingItem: false,
@@ -58,7 +58,6 @@
           this.page = response.data.meta.current_page;
           this.last = response.data.meta.last_page;
           this.total = response.data.meta.total;
-          console.log(this.items);
         }).catch(error=>{
         this.failMessage = 'Não foi possivel ir buscar os itens!'
         this.showFailure = true;
@@ -144,7 +143,6 @@
     mounted() {
       this.getResults(1);
       console.log(this.last);
-     
       //notificar
      // if(this.$store.state.user.type=='manager')
       //{
@@ -157,7 +155,7 @@
           },
 
         }
-        });
+      });
       //}
 
 
@@ -165,15 +163,12 @@
 
 
     },
-
-    created()
-    {
-       if(this.$store.state.user ==null)
-        {
-          this.user={};
-        }else{
-          this.user = this.$store.state.user;
-        }
+    created(){
+      if(this.$store.state.user == null){
+        this.user={};
+      }else {
+        this.user = this.$store.state.user;
+      }
     }
   }
 </script>

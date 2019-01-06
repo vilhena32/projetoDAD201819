@@ -5,7 +5,8 @@
   </div>
 
   <div class="container">
-<button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter' ||this.$store.state.user.type=='cook' " @click="showPreparedOrders">Show prepared orders</button>    <button class="btn btn-primary" v-if="showingPreparedOrders" @click="cancelShowPreparedOrders">Show orders</button>
+  <button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter' ||this.$store.state.user.type=='cook' " @click="showPreparedOrders">Show prepared orders</button>
+    <button class="btn btn-primary" v-if="showingPreparedOrders" @click="cancelShowPreparedOrders">Show orders</button>
     <button class="btn btn-success" v-if="this.$store.state.user.type=='waiter'" @click="showAddOrder">Add order</button>
     <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
         <button type="button" @click = "showSuccess = false; showFailure = false;" class="close-btn" >&times;</button>
@@ -100,7 +101,7 @@
 
           });
 
-
+          // this.showingPreparedOrders=false;
 
 
 			   /* axios.get('api/users?page='+page)
@@ -120,6 +121,7 @@
 
           getPreparedOrders()
           {
+
             axios.get('/api/getpreparedorders/'+this.$store.state.user.id)
             .then(response=>{
               this.orders = response.data.data;
@@ -135,6 +137,8 @@
               this.showFailure = true;
               this.failMessage = 'Error while fetching the existing prepared orders!'
             });
+            // this.showingPreparedOrders=true;
+
           },
 
         getMeals()  {
@@ -187,7 +191,7 @@
       this.showingPreparedOrders = false;
 
       this.getOrders();
-
+      
       this.showingOrders = true;
 
     },
