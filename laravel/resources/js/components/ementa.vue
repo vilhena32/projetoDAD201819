@@ -7,7 +7,7 @@
   <div class="container">
     <button class="btn btn-primary" @click.prevent="showEmenta" v-if="!showingEmenta">Mostrar Ementa</button>
     <button class="btn btn-primary" @click.prevent="showEmenta" v-if="showingEmenta">Fechar Ementa</button>
-    <button v-if="this.$store.state.user.type=='manager'" class="btn btn-success" @click.prevent="showAddItem">Adicionar Item</button>
+    <button v-if="user.type=='manager'" class="btn btn-success" @click.prevent="showAddItem">Adicionar Item</button>
     <div class=" alert" :class="{'alert-success': showSuccess, 'alert-danger': showFailure}" v-if="showSuccess || showFailure">
         <button type="button" @click="showSuccess = false; showFailure = false;" class="close-btn" >&times;</button>
         <strong>{{successMessage}}</strong>
@@ -35,6 +35,7 @@
       return{
         title:'Menu',
         items: [],
+        user: [],
         addingItem: false,
         showingEmenta: true,
         editingItem: false,
@@ -57,6 +58,7 @@
           this.page = response.data.meta.current_page;
           this.last = response.data.meta.last_page;
           this.total = response.data.meta.total;
+          console.log(this.items);
         }).catch(error=>{
         this.failMessage = 'Não foi possivel ir buscar os itens!'
         this.showFailure = true;
@@ -141,7 +143,7 @@
     },
     mounted() {
       this.getResults(1);
-      console.log(this.last);
+     
       //notificar
      // if(this.$store.state.user.type=='manager')
       //{
@@ -161,6 +163,16 @@
 
 
 
+    },
+
+    created()
+    {
+       if(this.$store.state.user ==null)
+        {
+          this.user=[];
+        }else{
+          this.user = this.$store.state.user;
+        }
     }
   }
 </script>
