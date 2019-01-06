@@ -23,7 +23,7 @@
             <td>
               <button v-on:click.prevent="editUser(user)" class="btn btn-xs btn-primary"><i class="fas fa-pencil-alt"></i></button>
               <button v-on:click="deleteUser(user, index)" class="btn btn-xs btn-danger"><i class="fas fa-trash-alt"></i></button>
-              <button v-on:click.prevent="blockUser(user)" :class="{'btn-success':user.blocked, 'btn-warning':!user.blocked}" class="btn btn.xs "><i class="fas fa-ban"></i></button>
+              <button  v-if="authUser.id!=user.id" v-on:click.prevent="blockUser(user)" :class="{'btn-success':user.blocked, 'btn-warning':!user.blocked}" class="btn btn.xs "><i class="fas fa-ban"></i></button>
             </td>
         </tr>
     </tbody>
@@ -34,7 +34,7 @@
         props: ["users"],
         data:function () {
             return{
-
+                authUser: {},
             };
         },
         methods: {
@@ -47,6 +47,16 @@
             blockUser: function (user) {
                 this.$emit('block-user',user);
             }
+        },
+        created()
+        {
+            if(this.$store.state.user!=null)
+            {
+                console.log(this.$store.state.user);
+                this.authUser=this.$store.state.user;
+            }
+       
+            
         }
     };
 </script>
