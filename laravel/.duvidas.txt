@@ -1,0 +1,8 @@
+1 - editarItem a dar erro
+2 - apagarItem a dar error
+3 - no Adicionar Item como é que vamos bsucar os dados para enviar no pedido do axios
+4 - nos forms de addicionar e editar item preencher automaticamente o tipo
+5 - o paginate dos items
+----
+6 - US.28 (softdeletes)
+7 - se o adicionar mesa pode ser feito apenas com um botao (ou seja sem formulario pois nao há nada para preencher);
