@@ -35,7 +35,7 @@
       return{
         title:'Menu',
         items: [],
-        user: [],
+        user: {},
         addingItem: false,
         showingEmenta: true,
         editingItem: false,
@@ -143,6 +143,7 @@
     },
     mounted() {
       this.getResults(1);
+      console.log(this.last);
      
       //notificar
      // if(this.$store.state.user.type=='manager')
@@ -169,7 +170,7 @@
     {
        if(this.$store.state.user ==null)
         {
-          this.user=[];
+          this.user={};
         }else{
           this.user = this.$store.state.user;
         }

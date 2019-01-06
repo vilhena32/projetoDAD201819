@@ -5,17 +5,16 @@
   </div>
 
   <div class="container">
-  <button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter' ||this.$store.state.user.type=='cook' " @click="getPreparedOrders">Show prepared orders</button>
-    <button class="btn btn-primary" v-if="showingPreparedOrders" @click="cancelShowPreparedOrders">Show orders</button>
+<button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter' ||this.$store.state.user.type=='cook' " @click="showPreparedOrders">Show prepared orders</button>    <button class="btn btn-primary" v-if="showingPreparedOrders" @click="cancelShowPreparedOrders">Show orders</button>
     <button class="btn btn-success" v-if="this.$store.state.user.type=='waiter'" @click="showAddOrder">Add order</button>
     <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
         <button type="button" @click = "showSuccess = false; showFailure = false;" class="close-btn" >&times;</button>
         <strong>{{successMessage}}</strong>
         <strong>{{failMessage}}</strong>
     </div>
-    <order-list :showingPreparedOrders="showingPreparedOrders" :preparedOrders="preparedOrders" :user="this.$store.state.user" :orders="orders" @deliver-order="changeOrderState"
+    <order-list :showingPreparedOrders="showingPreparedOrders" :preparedOrders="preparedOrders" :user="this.$store.state.user" :orders="orders" :deliver-order="changeOrderState"
     v-if="showingOrders"
-    @delete-order="deleteOrder" @take-order="takeOrder" @prepare-order="changeOrderState"></order-list>
+    :delete-order="deleteOrder" :take-order="takeOrder" :prepare-order="changeOrderState"></order-list>
     <add-order :items="items" :currentOrder="currentOrder" :meals="meals" v-if="showingAddOrders" @cancel-add="cancelAddOrder" @add-order="addOrder"></add-order>
   </div>
   <!-- @getOrdersParent="getOrdersP" -->
@@ -97,6 +96,8 @@
 
               this.showFailure = true;
               this.failMessage = 'Error while fetching the existing orders!';
+                        // this.showingPreparedOrders=false;
+
           });
 
 
@@ -184,7 +185,11 @@
     cancelShowPreparedOrders: function(){
       this.showingOrders = false;
       this.showingPreparedOrders = false;
+
+      this.getOrders();
+
       this.showingOrders = true;
+
     },
     addOrder: function(order){
       axios.post('api/orders', order).then(response=>{
