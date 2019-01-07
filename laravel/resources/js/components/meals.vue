@@ -103,6 +103,8 @@ module.exports = {
       axios.put('/api/terminatemeal/'+meal.id).then(response=>{
         this.showSuccess = true;
         this.successMessage = "Meal terminated with success!";
+        let msg = "New terminated Meal";
+        this.$socket.emit('terminatedMealNotification', msg);
         this.meals.splice(index,1);
         axios.post('/api/invoices/'+meal.id).then(response=>{
           this.showSuccess = false;
@@ -112,6 +114,8 @@ module.exports = {
           invoice = response.data;
           axios.post('/api/invoiceItems/'+invoice.id, meal).then(response=>{
             this.successMessage = 'Invoice items created with success!';
+           
+
           }).catch(error=>{
             this.showSuccess = false;
             this.successMessage = '';

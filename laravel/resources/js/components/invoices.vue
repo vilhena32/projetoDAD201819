@@ -135,6 +135,8 @@ module.exports = {
           this.showFailure = false;
           this.showSuccess = true;
           this.invoices.splice(index, 1);
+          this.$socket.emit('paidMealNotification', msg);
+
           this.getInvoicesPending();
         }).catch(error=>{
           this.failMessage = 'Error while closing the invoice!';
