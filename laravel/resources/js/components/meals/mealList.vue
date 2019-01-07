@@ -41,6 +41,7 @@ module.exports = {
           if(order.state != 'delivered'){
             if (window.confirm("This measl has orders that have not been delivered. Do you want to terminate this meal anyway?")){
                 this.$emit('terminate-meal', meal, index); //Ok pressed
+                break;
             }
           }
         }
