@@ -182,6 +182,11 @@ const app = new Vue({
         privateMessage_sent(dataFromServer){
             this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to "' + dataFromServer[1].name + '"');
         },
+
+        notifications_manager_msg(msg)
+        {
+          this.$toasted.success(msg);
+        }        
     },
     created(){
       this.$store.commit('loadTokenAndUserFromSession');
