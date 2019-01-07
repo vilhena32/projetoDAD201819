@@ -26137,7 +26137,25 @@ var app = new Vue({
     },
     privateMessage_sent: function privateMessage_sent(dataFromServer) {
       this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to "' + dataFromServer[1].name + '"');
+    },
+
+    // <<<<<<< HEAD
+    //         managersMessage(dataFromServer){
+    //               let sourceName = dataFromServer[1] === null ? 'Unknown': dataFromServer[1].name;
+    //               this.$toasted.show('Message "' + dataFromServer[0] + '" sent from "' + sourceName + '"');
+    //           },
+    //
+    //           managersMessage_sent(dataFromServer){
+    //               this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to managers"');
+    //           },
+    //
+    // =======
+
+    notifications_manager_msg: function notifications_manager_msg(msg) {
+      this.$toasted.success(msg);
     }
+    // >>>>>>> master
+
   },
   created: function created() {
     this.$store.commit('loadTokenAndUserFromSession');
@@ -57658,6 +57676,21 @@ module.exports = {
 
         _this9.managers = response.data.data;
       });
+    },
+
+    sendMsgToManagers: function sendMsgToManagers() {
+      // this.$socket.emit('user_enter_manager', this.authUser);
+      var msg = window.prompt('What do you want to notify to the managers?');
+      console.log('Sending to the server (only managers) this message: "' + msg + '"');
+      if (this.$store.state.user === null) {
+        this.$toasted.error('User is not logged in. Department is unknown!');
+      } else {
+        this.$socket.emit('message_managers', msg + " from " + this.$store.state.user.name);
+      }
+      // msg = "";
+      // this.$socket.emit('user_exit_manager', this.authUser);
+
+      // this.$socket.emit('user_exit_manager', this.authUser);
     }
   },
   created: function created() {
@@ -57871,6 +57904,20 @@ var render = function() {
                   [_vm._v("Fechar Managers")]
                 )
               : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.sendMsgToManagers($event)
+                  }
+                }
+              },
+              [_vm._v("Notificar Managers")]
+            ),
             _vm._v(" "),
             _vm.showSuccess || _vm.showFailure
               ? _c(
@@ -59133,6 +59180,7 @@ module.exports = {
         };
     },
     methods: {
+
         sendMessageTo: function sendMessageTo(manager) {
             var msg = window.prompt('What do you want to say to "' + manager.name + '"');
             console.log('Sending Message "' + msg + '" to "' + manager.name + '"');
@@ -61094,7 +61142,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61169,6 +61217,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 //Escutar tipos de mensagens
 
                 _this.$socket.emit('user_enter', response.data.data);
+                // this.$socket.emit('user_enter_type', response.data.data);
+
             }).catch(function (error) {
                 _this.$store.commit('clearUserAndToken');
                 _this.typeofmsg = "alert-danger";
@@ -61413,7 +61463,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61456,6 +61506,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.showMessage = false;
             this.$socket.emit('user_exit', this.$store.state.user);
+            // this.$socket.emit('user_exit_type', this.$store.state.user); 
             axios.post('api/logout').then(function (response) {
 
                 _this.$store.commit('clearUserAndToken');

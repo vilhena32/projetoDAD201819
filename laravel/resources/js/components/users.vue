@@ -267,16 +267,16 @@
 				  });
 		    },
         sendMsgToManagers: function(){
-          this.$socket.emit('user_enter_manager', this.authUser);
+          // this.$socket.emit('user_enter_manager', this.authUser);
           let msg = window.prompt('What do you want to notify to the managers?');
           console.log('Sending to the server (only managers) this message: "' + msg + '"');
-        if (this.authUser === null) {
+        if (this.$store.state.user === null) {
             this.$toasted.error('User is not logged in. Department is unknown!');
         } else {
-            this.$socket.emit('managersMessage', msg, this.authUser);
+            this.$socket.emit('message_managers', msg+" from "+ this.$store.state.user.name);
         }
-        msg = "";
-        this.$socket.emit('user_exit_manager', this.authUser);
+        // msg = "";
+        // this.$socket.emit('user_exit_manager', this.authUser);
 
           // this.$socket.emit('user_exit_manager', this.authUser);
       },

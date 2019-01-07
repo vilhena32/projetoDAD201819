@@ -62,7 +62,7 @@ export default {
                     //Escutar tipos de mensagens
 
                    this.$socket.emit('user_enter', response.data.data);
-                   this.$socket.emit('user_enter_type', response.data.data);
+                   // this.$socket.emit('user_enter_type', response.data.data);
 
 
                 })

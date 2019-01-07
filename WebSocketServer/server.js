@@ -72,12 +72,11 @@ io.on('connection', function (socket) {
 		          }
     });
 
-    socket.on('managersMessage', function (msg, userInfo) {
-		if (userInfo !== undefined) {
-			let channelName = 'notifications_manager';
-			io.sockets.to(channelName).emit('managersMessage', userInfo.name +': "' + msg + '"');
-      socket.emit('managersMessage_sent', msg);
-		}
+    socket.on('message_managers', function (msg) {
+		// if (userInfo !== undefined) {
+			io.sockets.to('notifications_manager').emit('notifications_manager_msg',  msg);
+      // socket.emit('managersMessage_sent', msg);
+		// }
 	});
     // socket.on('private_message', (msg, to, from)=>{
     //   const userInfo = loggedUsers.userInfoBy(to.id);
@@ -97,23 +96,23 @@ io.on('connection', function (socket) {
     // });
 
 
-    socket.on('user_enter_type', function (user) {
-        if (user !== undefined && user !== null)
-        {
-            socket.join('notifications_' + user.type);
-            console.log('User ' + user.name + ' has join notification_' + user.type );
-        }
-
-    });
-
-    socket.on('user_enter_manager', function (user) {
-        if (user !== undefined && user !== null)
-        {
-            socket.join('notifications_manager');
-            console.log('User ' + user.name + ' has join notifications_manager' );
-        }
-
-    });
+    // socket.on('user_enter_type', function (user) {
+    //     if (user !== undefined && user !== null)
+    //     {
+    //         socket.join('notifications_' + user.type);
+    //         console.log('User ' + user.name + ' has join notification_' + user.type );
+    //     }
+    //
+    // });
+    //
+    // socket.on('user_enter_manager', function (user) {
+    //     if (user !== undefined && user !== null)
+    //     {
+    //         socket.join('notifications_manager');
+    //         console.log('User ' + user.name + ' has join notifications_manager' );
+    //     }
+    //
+    // });
 
     socket.on('user_enter', function (user) {
         if (user !== undefined && user !== null)
@@ -122,7 +121,7 @@ io.on('connection', function (socket) {
             socket.join('notifications_'+user.type);
 
             loggedUsers.addUserInfo(user, socket.id);
-            let msg= "Hello!!!";
+            let msg= "Hello "+user.name+" is here!!!";
             console.log(msg);
             console.log('User ' + user.name + ' has join notifications' );
             if(user.type!='manager')
@@ -131,25 +130,34 @@ io.on('connection', function (socket) {
                 io.sockets.to('notifications_manager').emit('notifications_manager_msg', msg);
 
             }
-            console.log(user);
+            // console.log(user);
         }
 
     });
 
-    socket.on('user_exit_type', function (user) {
-        if (user !== undefined && user !== null)
-        {
-            socket.leave('notifications_' + user.type);
-            console.log('User ' + user.name +' has left ' + user.type );
-        }
+    socket.on('user_exit', function (user) {
+		if (user !== undefined && user !== null) {
+			socket.leave('notifications_' + user.type);
+      socket.leave('notifications');
+			loggedUsers.removeUserInfoByID(user.id);
+      let msg= "Bye Bye "+user.name+" is out!!!";
+      console.log(msg);
+      console.log('User ' + user.name + ' has left notifications' );
+      if(user.type!='manager')
+      {
+          msg = user.name + 'has left ' + user.type+'s';
+          io.sockets.to('notifications_manager').emit('notifications_manager_msg', msg);
 
-    });
-    socket.on('user_exit_managers', function (user) {
-        if (user !== undefined && user !== null)
-        {
-            socket.leave('notifications_manager');
-            console.log('User ' + user.name +' has left notifications_manager' );
-        }
-
-    });
+      }
+      // console.log(user);
+		}
+	});
+    // socket.on('user_exit_managers', function (user) {
+    //     if (user !== undefined && user !== null)
+    //     {
+    //         socket.leave('notifications_manager');
+    //         console.log('User ' + user.name +' has left notifications_manager' );
+    //     }
+    //
+    // });
 });

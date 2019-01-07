@@ -28,7 +28,7 @@
         logout() {
             this.showMessage = false;
             this.$socket.emit('user_exit', this.$store.state.user);
-            this.$socket.emit('user_exit_type', this.$store.state.user); 
+            // this.$socket.emit('user_exit_type', this.$store.state.user); 
             axios.post('api/logout')
 
                 .then(response => {
