@@ -116,9 +116,24 @@ io.on('connection', function (socket) {
         if (user !== undefined && user !== null)
         {
             socket.leave('notifications');
+            socket.leave('notifications_'+user.type);
             loggedUsers.removeUserInfoByID(user.id);
             console.log('User ' + user.name +' has left notifications'  );
         }
+
+    });
+
+    socket.on('terminatedMealNotification',  (msg)=> {
+       
+        console.log(msg);
+        io.sockets.to('notifications_manager').emit('notifications_manager_msg', msg);
+
+    });
+
+    socket.on('paidMealNotification',  (msg)=> {
+       
+        console.log(msg);
+        io.sockets.to('notifications_manager').emit('notifications_manager_msg', msg);
 
     });
 });
