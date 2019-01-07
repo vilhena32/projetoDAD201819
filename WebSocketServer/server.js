@@ -49,6 +49,7 @@ io.on('connection', function (socket) {
     socket.on('order_changed', function (changedOrder) {
       socket.broadcast.emit('order_changed', changedOrder);
     });
+
     // socket.broadcast.emit emit para todos os sockets menos o que enviou (socket.io cheetsheat)
     // socket.on('msg_from_client', msg=>{
     //   io.sockets.emit('msg_from_server', msg);
@@ -69,7 +70,9 @@ io.on('connection', function (socket) {
 			              io.to(socket_id).emit('privateMessage', msg, sourceUser);
 			              socket.emit('privateMessage_sent', msg, destUser);
 		          }
-	});
+    });
+    
+    
     // socket.on('private_message', (msg, to, from)=>{
     //   const userInfo = loggedUsers.userInfoBy(to.id);
     //   if(userInfo){
@@ -87,4 +90,22 @@ io.on('connection', function (socket) {
     //   }
     // });
 
+
+    socket.on('user_enter', function (user) {
+        if (user !== undefined && user !== null)
+        {
+            socket.join('notifications_' + user.type);
+            console.log('User has join ' + user.type );
+        }
+    
+    });
+
+    socket.on('user_exit', function (user) {
+        if (user !== undefined && user !== null)
+        {
+            socket.leave('notifications_' + user.type);
+            console.log('User has left ' + user.type );
+        }
+    
+    });
 });

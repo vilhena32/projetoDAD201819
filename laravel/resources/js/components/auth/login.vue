@@ -58,6 +58,11 @@ export default {
                     this.typeofmsg = "alert-success";
                     this.message = "User authenticated correctly";
                     this.showMessage = true;
+
+                    //Escutar tipos de mensagens
+
+                    this.$socket.emit('user_enter', response.data.data);
+
                 })
                 .catch(error => {
                     this.$store.commit('clearUserAndToken');
