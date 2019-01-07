@@ -16,9 +16,15 @@ use Illuminate\Support\Facades\Auth;
 class UsersControllerAPI extends Controller
 {
     public function index(Request $request){
-        
+
         return UserResource::collection(User::paginate(10));
-        
+
+    }
+
+    public function managerListing(Request $request){
+
+        return UserResource::collection(User::where('type','manager')->paginate(10));
+
     }
 
     public function show($id)
@@ -28,7 +34,7 @@ class UsersControllerAPI extends Controller
 
     public function getUserByToken($token)
     {
-        
+
         return new UserResource(User::where('remember_token',$token)->first());
     }
 

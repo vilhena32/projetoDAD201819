@@ -16,7 +16,7 @@
        <router-link class="nav-link" to="/ementa">Menu</router-link>
      </li>
      <li class="nav-item">
-       <router-link class="nav-link" to="/managerList" v-if="this.$store.state.user != null && this.$store.state.user.type != 'manager'">Managers</router-link>
+       <router-link class="nav-link" to="/users" v-if="this.$store.state.user != null && this.$store.state.user.type != 'manager'">Managers</router-link>
      </li>
      <li class="nav-item">
        <router-link class="nav-link" to="/users" v-if="this.$store.state.user != null && this.$store.state.user.type == 'manager'">Employess</router-link>
