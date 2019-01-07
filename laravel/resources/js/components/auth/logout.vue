@@ -27,17 +27,18 @@
     methods: {
         logout() {
             this.showMessage = false;
-            this.$socket.emit('user_exit', this.$store.state.user); 
+            this.$socket.emit('user_exit', this.$store.state.user);
+            this.$socket.emit('user_exit_type', this.$store.state.user); 
             axios.post('api/logout')
-            
+
                 .then(response => {
-                    
+
                     this.$store.commit('clearUserAndToken');
-                    
+
                     this.typeofmsg = "alert-success";
                     this.message = "User has logged out correctly";
                     this.showMessage = true;
-                    
+
                 })
                 .catch(error => {
                     this.$store.commit('clearUserAndToken');

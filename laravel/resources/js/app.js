@@ -182,6 +182,15 @@ const app = new Vue({
         privateMessage_sent(dataFromServer){
             this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to "' + dataFromServer[1].name + '"');
         },
+        managersMessage(dataFromServer){
+              let sourceName = dataFromServer[1] === null ? 'Unknown': dataFromServer[1].name;
+              this.$toasted.show('Message "' + dataFromServer[0] + '" sent from "' + sourceName + '"');
+          },
+
+          managersMessage_sent(dataFromServer){
+              this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to managers"');
+          },
+
     },
     created(){
       this.$store.commit('loadTokenAndUserFromSession');

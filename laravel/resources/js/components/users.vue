@@ -39,7 +39,7 @@
     <div class="container" v-if="authUser.type!='manager'">
       <button class="btn btn-primary" @click.prevent="showManagers" v-if="!showingManagers" >Mostrar Managers</button>
       <button class="btn btn-primary" @click.prevent="showUsers" v-if="showingManagers">Fechar Managers</button>
-
+      <button class="btn btn-primary" @click.prevent="sendMsgToManagers">Notificar Managers</button>
       <!-- <button class="btn btn-warning" @click.prevent="activeUserShift" >Iniciar/Terminar Turno</button> -->
 
       <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
@@ -266,6 +266,20 @@
 
 				  });
 		    },
+        sendMsgToManagers: function(){
+          this.$socket.emit('user_enter_manager', this.authUser);
+          let msg = window.prompt('What do you want to notify to the managers?');
+          console.log('Sending to the server (only managers) this message: "' + msg + '"');
+        if (this.authUser === null) {
+            this.$toasted.error('User is not logged in. Department is unknown!');
+        } else {
+            this.$socket.emit('managersMessage', msg, this.authUser);
+        }
+        msg = "";
+        this.$socket.emit('user_exit_manager', this.authUser);
+
+          // this.$socket.emit('user_exit_manager', this.authUser);
+      },
     },
     created()
     {

@@ -37,6 +37,9 @@
             };
         },
         methods: {
+          
+
+
           sendMessageTo: function(manager){
       let msg = window.prompt('What do you want to say to "' + manager.name + '"');
       console.log('Sending Message "' + msg + '" to "' + manager.name + '"');

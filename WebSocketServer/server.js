@@ -72,7 +72,13 @@ io.on('connection', function (socket) {
 		          }
     });
 
-
+    socket.on('managersMessage', function (msg, userInfo) {
+		if (userInfo !== undefined) {
+			let channelName = 'notifications_manager';
+			io.sockets.to(channelName).emit('managersMessage', userInfo.name +': "' + msg + '"');
+      socket.emit('managersMessage_sent', msg);
+		}
+	});
     // socket.on('private_message', (msg, to, from)=>{
     //   const userInfo = loggedUsers.userInfoBy(to.id);
     //   if(userInfo){
@@ -91,6 +97,24 @@ io.on('connection', function (socket) {
     // });
 
 
+    socket.on('user_enter_type', function (user) {
+        if (user !== undefined && user !== null)
+        {
+            socket.join('notifications_' + user.type);
+            console.log('User ' + user.name + ' has join notification_' + user.type );
+        }
+
+    });
+
+    socket.on('user_enter_manager', function (user) {
+        if (user !== undefined && user !== null)
+        {
+            socket.join('notifications_manager');
+            console.log('User ' + user.name + ' has join notifications_manager' );
+        }
+
+    });
+
     socket.on('user_enter', function (user) {
         if (user !== undefined && user !== null)
         {
@@ -101,12 +125,19 @@ io.on('connection', function (socket) {
 
     });
 
-    socket.on('user_exit', function (user) {
+    socket.on('user_exit_type', function (user) {
         if (user !== undefined && user !== null)
         {
-            socket.leave('notifications');
-            loggedUsers.removeUserInfoByID(user.id);
-            console.log('User ' + user.name +' has left notifications'  );
+            socket.leave('notifications_' + user.type);
+            console.log('User ' + user.name +' has left ' + user.type );
+        }
+
+    });
+    socket.on('user_exit_managers', function (user) {
+        if (user !== undefined && user !== null)
+        {
+            socket.leave('notifications_manager');
+            console.log('User ' + user.name +' has left notifications_manager' );
         }
 
     });
