@@ -24,13 +24,25 @@ class OrderControllerAPI extends Controller
     $user = User::findOrFail($id);
     $newOrders = [];
     if($user->type == 'waiter'){
-      return OrderResource::collection(Order::orderBy('state', 'desc')->whereIn('meal_id',function($query)  use($id){
-                                                      $query->select('id')
+      // return OrderResource::collection(Order::orderBy('state', 'desc')
+      //                                         ->whereIn('meal_id',function($query)  use($id){
+      //                                                 $query->select('id')
+      //                                                 ->from('meals')
+      //                                                 ->where('responsible_waiter_id', $id);
+      //                                                 })
+      //                                         ->where('state','pending')
+      //                                         ->orWhere('state','confirmed')
+      //                                         ->get());
+      return OrderResource::collection(Order::orderBy('state', 'desc')
+                                              ->whereIn('meal_id', function ($query) use ($id) {
+                                                  $query->select('id')
                                                       ->from('meals')
                                                       ->where('responsible_waiter_id', $id);
-                                                      })
-                                              ->where('state','pending')
-                                              ->orWhere('state','confirmed')
+                                                  })
+                                            ->where(function ($q) {
+                                                    $q->where('state', 'pending')
+                                                        ->orWhere('state', 'confirmed');
+                                                ​})
                                               ->get());
     } elseif ($user->type == 'cook') {
       return OrderResource::collection(Order::orderBy('created_at', 'desc')->where([
