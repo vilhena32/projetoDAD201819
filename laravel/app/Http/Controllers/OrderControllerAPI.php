@@ -33,17 +33,29 @@ class OrderControllerAPI extends Controller
       //                                         ->where('state','pending')
       //                                         ->orWhere('state','confirmed')
       //                                         ->get());
-      return OrderResource::collection(Order::orderBy('state', 'desc')
-                                              ->whereIn('meal_id', function ($query) use ($id) {
-                                                  $query->select('id')
-                                                      ->from('meals')
-                                                      ->where('responsible_waiter_id', $id);
-                                                  })
+
+      // return OrderResource::collection(Order::orderBy('state', 'desc')
+      //                                         ->whereIn('meal_id', function ($query) use ($id) {
+      //                                             $query->select('id')
+      //                                                 ->from('meals')
+      //                                                 ->where('responsible_waiter_id', $id);
+      //                                             })
+      //                                         ->where(function ($q) {
+      //                                               $q->where('state', 'pending')
+      //                                                   ->orWhere('state', 'confirmed');
+      //                                           ​})
+      //                                         ->get());
+    return OrderResource::collection(Order::orderBy('state','desc')
+                                            ->whereIn('meal_id',function ($query) use ($id){
+                                                $query->select('id')
+                                                    ->from('meals')
+                                                    ->where('responsible_waiter_id', $id);
+                                            })
                                             ->where(function ($q) {
-                                                    $q->where('state', 'pending')
-                                                        ->orWhere('state', 'confirmed');
-                                                ​})
-                                              ->get());
+                                              $q->where('state','pending')
+                                                ->orWhere('state','confirmed');
+                                            })
+                                            ->get());
     } elseif ($user->type == 'cook') {
       return OrderResource::collection(Order::orderBy('created_at', 'desc')->where([
                                                     ['responsible_cook_id', $id],
