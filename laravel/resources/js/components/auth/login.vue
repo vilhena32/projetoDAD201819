@@ -9,8 +9,8 @@
             <button type="button" class="close-btn" v-on:click="showMessage=false">&times;</button>
             <strong>{{ message }}</strong>
         </div>
-    		
-    		
+
+
           <div class="form-group">
       			<div class="input-group">
       				<span class="input-group-addon"><i class="fa fa-paper-plane"></i></span>
@@ -61,7 +61,7 @@ export default {
 
                     //Escutar tipos de mensagens
 
-                    this.$socket.emit('user_enter', response.data.data);
+                   this.$socket.emit('user_enter', response.data.data);
 
                 })
                 .catch(error => {

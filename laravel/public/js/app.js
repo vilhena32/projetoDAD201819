@@ -57448,6 +57448,18 @@ module.exports = Component.exports
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 module.exports = {
@@ -57455,9 +57467,11 @@ module.exports = {
     return {
       title: 'Users',
       users: [],
+      managers: [],
       authUser: {},
       editingUser: false,
       showingUsers: true,
+      showingManagers: true,
       addingUser: false,
       showSuccess: false,
       showFailure: false,
@@ -57618,6 +57632,32 @@ module.exports = {
         _this7.failMessage = 'Could not get Users!';
         _this7.showUsers();
       });
+    },
+    getManagers: function getManagers() {
+      var _this8 = this;
+
+      axios.get('api/managers').then(function (response) {
+        _this8.managers = response.data.data;
+      }).catch(function (error) {
+        _this8.failMessage = 'Could not get Managers!';
+        _this8.showManagers();
+      });
+    },
+
+    showManagers: function showManagers() {
+      if (this.showingManagers == false) {
+        this.showingManagers = true;
+      } else {
+        this.showingManagers = false;
+      }
+    },
+    getManagerResults: function getManagerResults() {
+      var _this9 = this;
+
+      axios.get('api/managers').then(function (response) {
+
+        _this9.managers = response.data.data;
+      });
     }
   },
   created: function created() {
@@ -57628,6 +57668,7 @@ module.exports = {
   },
   beforeMount: function beforeMount() {
     this.getResults();
+    this.getManagerResults();
   }
 };
 
@@ -57795,7 +57836,81 @@ var render = function() {
       : _vm._e(),
     _vm._v(" "),
     _vm.authUser.type != "manager"
-      ? _c("div", { staticClass: "container" })
+      ? _c(
+          "div",
+          { staticClass: "container" },
+          [
+            !_vm.showingManagers
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.showManagers($event)
+                      }
+                    }
+                  },
+                  [_vm._v("Mostrar Managers")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.showingManagers
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.showUsers($event)
+                      }
+                    }
+                  },
+                  [_vm._v("Fechar Managers")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.showSuccess || _vm.showFailure
+              ? _c(
+                  "div",
+                  {
+                    staticClass: " alert",
+                    class: {
+                      "alert-success": _vm.showSuccess,
+                      "alert-danger": _vm.showFailure
+                    }
+                  },
+                  [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "close-btn",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            _vm.showSuccess = false
+                            _vm.showFailure = false
+                          }
+                        }
+                      },
+                      [_vm._v("×")]
+                    ),
+                    _vm._v(" "),
+                    _c("strong", [_vm._v(_vm._s(_vm.successMessage))]),
+                    _vm._v(" "),
+                    _c("strong", [_vm._v(_vm._s(_vm.failMessage))])
+                  ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.showingManagers
+              ? _c("manager-list", { attrs: { managers: _vm.managers } })
+              : _vm._e()
+          ],
+          1
+        )
       : _vm._e()
   ])
 }
@@ -59009,24 +59124,19 @@ module.exports = Component.exports
 //
 //
 //
-//
 
 module.exports = {
-    props: ["users"],
+    props: ["managers"],
     data: function data() {
         return {
             authUser: {}
         };
     },
     methods: {
-        editUser: function editUser(user) {
-            this.$emit('show-edit-user', user);
-        },
-        deleteUser: function deleteUser(user, index) {
-            this.$emit('delete-user', user, index);
-        },
-        blockUser: function blockUser(user) {
-            this.$emit('block-user', user);
+        sendMessageTo: function sendMessageTo(manager) {
+            var msg = window.prompt('What do you want to say to "' + manager.name + '"');
+            console.log('Sending Message "' + msg + '" to "' + manager.name + '"');
+            this.$socket.emit('privateMessage', msg, this.authUser, manager);
         }
     },
     created: function created() {
@@ -59050,22 +59160,22 @@ var render = function() {
     _vm._v(" "),
     _c(
       "tbody",
-      _vm._l(_vm.users, function(user, index) {
-        return _c("tr", { key: user.id }, [
-          _c("td", [_vm._v(_vm._s(user.name))]),
+      _vm._l(_vm.managers, function(manager, index) {
+        return _c("tr", { key: manager.id }, [
+          _c("td", [_vm._v(_vm._s(manager.name))]),
           _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(user.username))]),
+          _c("td", [_vm._v(_vm._s(manager.username))]),
           _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(user.email))]),
+          _c("td", [_vm._v(_vm._s(manager.email))]),
           _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(user.type))]),
+          _c("td", [_vm._v(_vm._s(manager.type))]),
           _vm._v(" "),
           _c("td", [
             _c("img", {
               attrs: {
                 width: "100px",
                 heigth: "100px",
-                src: "storage/profiles/" + user.photo_url
+                src: "storage/profiles/" + manager.photo_url
               }
             })
           ]),
@@ -59078,45 +59188,12 @@ var render = function() {
                 on: {
                   click: function($event) {
                     $event.preventDefault()
-                    _vm.editUser(user)
+                    _vm.sendMessageTo(manager)
                   }
                 }
               },
-              [_c("i", { staticClass: "fas fa-pencil-alt" })]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-xs btn-danger",
-                on: {
-                  click: function($event) {
-                    _vm.deleteUser(user, index)
-                  }
-                }
-              },
-              [_c("i", { staticClass: "fas fa-trash-alt" })]
-            ),
-            _vm._v(" "),
-            _vm.authUser.id != user.id
-              ? _c(
-                  "button",
-                  {
-                    staticClass: "btn btn.xs ",
-                    class: {
-                      "btn-success": user.blocked,
-                      "btn-warning": !user.blocked
-                    },
-                    on: {
-                      click: function($event) {
-                        $event.preventDefault()
-                        _vm.blockUser(user)
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "fas fa-ban" })]
-                )
-              : _vm._e()
+              [_c("i", { staticClass: "fas fa-comment-alt" })]
+            )
           ])
         ])
       })
@@ -61038,7 +61115,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61109,6 +61186,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.typeofmsg = "alert-success";
                 _this.message = "User authenticated correctly";
                 _this.showMessage = true;
+
+                //Escutar tipos de mensagens
+
+                _this.$socket.emit('user_enter', response.data.data);
             }).catch(function (error) {
                 _this.$store.commit('clearUserAndToken');
                 _this.typeofmsg = "alert-danger";
@@ -61353,7 +61434,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61395,14 +61476,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             this.showMessage = false;
+            this.$socket.emit('user_exit', this.$store.state.user);
             axios.post('api/logout').then(function (response) {
+
                 _this.$store.commit('clearUserAndToken');
+
                 _this.typeofmsg = "alert-success";
                 _this.message = "User has logged out correctly";
                 _this.showMessage = true;
-                _this.$router.router.push('/');
             }).catch(function (error) {
                 _this.$store.commit('clearUserAndToken');
+                //this.$socket.emit('user_exit', this.$store.state.user);
                 _this.typeofmsg = "alert-danger";
                 _this.message = "Logout incorrect. But local credentials were discarded";
                 _this.showMessage = true;

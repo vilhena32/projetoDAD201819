@@ -37,6 +37,18 @@
     </div>
 
     <div class="container" v-if="authUser.type!='manager'">
+      <button class="btn btn-primary" @click.prevent="showManagers" v-if="!showingManagers" >Mostrar Managers</button>
+      <button class="btn btn-primary" @click.prevent="showUsers" v-if="showingManagers">Fechar Managers</button>
+
+      <!-- <button class="btn btn-warning" @click.prevent="activeUserShift" >Iniciar/Terminar Turno</button> -->
+
+      <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
+        <button type="button" @click = "showSuccess = false; showFailure = false;" class="close-btn" >&times;</button>
+        <strong>{{successMessage}}</strong>
+        <strong>{{failMessage}}</strong>
+      </div>
+
+      <manager-list v-bind:managers="managers" v-if="showingManagers"></manager-list>
 
     </div>
 
@@ -52,9 +64,11 @@
         return{
         title: 'Users',
         users: [],
+        managers: [],
         authUser: {},
         editingUser: false,
         showingUsers: true,
+        showingManagers: true,
         addingUser: false,
         showSuccess: false,
         showFailure: false,
@@ -226,8 +240,32 @@
           this.showUsers();
 
 
-      });
-        }
+        });
+      },
+      getManagers(){
+        axios.get('api/managers').then(response => {
+          this.managers = response.data.data;
+        }).catch(error => {
+          this.failMessage = 'Could not get Managers!';
+          this.showManagers();
+        });
+      },
+      showManagers: function(){
+          if(this.showingManagers == false){
+            this.showingManagers = true;
+          } else{
+            this.showingManagers = false;
+          }
+      },
+      getManagerResults() {
+          axios.get('api/managers')
+				  .then(response => {
+
+            this.managers = response.data.data;
+
+
+				  });
+		    },
     },
     created()
     {
@@ -241,6 +279,7 @@
     },
     beforeMount() {
       this.getResults();
+      this.getManagerResults();
     }
   }
 

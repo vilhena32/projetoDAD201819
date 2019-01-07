@@ -17,7 +17,7 @@ class LoggedUsers {
         }
         return null;
     }
-
+		
     addUserInfo(user, socketID) {
         let userInfo = {user: user, socketID: socketID};
     	this.users.set(user.id, userInfo);

@@ -71,8 +71,8 @@ io.on('connection', function (socket) {
 			              socket.emit('privateMessage_sent', msg, destUser);
 		          }
     });
-    
-    
+
+
     // socket.on('private_message', (msg, to, from)=>{
     //   const userInfo = loggedUsers.userInfoBy(to.id);
     //   if(userInfo){
@@ -94,18 +94,20 @@ io.on('connection', function (socket) {
     socket.on('user_enter', function (user) {
         if (user !== undefined && user !== null)
         {
-            socket.join('notifications_' + user.type);
-            console.log('User has join ' + user.type );
+            socket.join('notifications');
+            loggedUsers.addUserInfo(user, socket.id);
+            console.log('User ' + user.name + ' has join notifications' );
         }
-    
+
     });
 
     socket.on('user_exit', function (user) {
         if (user !== undefined && user !== null)
         {
-            socket.leave('notifications_' + user.type);
-            console.log('User has left ' + user.type );
+            socket.leave('notifications');
+            loggedUsers.removeUserInfoByID(user.id);
+            console.log('User ' + user.name +' has left notifications'  );
         }
-    
+
     });
 });
