@@ -59327,7 +59327,7 @@ module.exports = {
       var _this2 = this;
 
       axios.get('/api/getpreparedorders/' + this.$store.state.user.id).then(function (response) {
-        _this2.orders = response.data.data;
+        _this2.preparedOrders = response.data.data;
         // this.page = response.data.meta.current_page;
         // this.last = response.data.meta.last_page;
         // this.total = response.data.meta.total;
@@ -59384,7 +59384,7 @@ module.exports = {
       this.showingPreparedOrders = true;
       this.showingOrders = false;
       if (this.preparedOrders.length == 0) {
-        this.getPreparedOrders(1);
+        this.getPreparedOrders();
       }
       this.showingOrders = true;
     },
@@ -59460,13 +59460,14 @@ module.exports = {
         _this7.failMessage = 'Error while associating this order to you!';
       });
     },
-    changeOrderState: function changeOrderState(order) {
+    changeOrderState: function changeOrderState(order, index) {
       var _this8 = this;
 
       axios.put('/api/orderstate/' + order.id).then(function (response) {
         _this8.showSuccess = true;
         _this8.successMessage = 'Order state changed successfuly!';
         _this8.getOrders();
+        _this8.getPreparedOrders();
       }).catch(function (error) {
         _this8.showFailure = true;
         _this8.failMessage = 'Error while changing order state!';
@@ -59521,9 +59522,7 @@ var render = function() {
       "div",
       { staticClass: "container" },
       [
-        (!_vm.showingPreparedOrders &&
-          this.$store.state.user.type == "waiter") ||
-        this.$store.state.user.type == "cook"
+        !_vm.showingPreparedOrders && this.$store.state.user.type == "waiter"
           ? _c(
               "button",
               {
@@ -59595,7 +59594,9 @@ var render = function() {
                 showingPreparedOrders: _vm.showingPreparedOrders,
                 preparedOrders: _vm.preparedOrders,
                 user: this.$store.state.user,
-                orders: _vm.orders,
+                orders: _vm.orders
+              },
+              on: {
                 "deliver-order": _vm.changeOrderState,
                 "delete-order": _vm.deleteOrder,
                 "take-order": _vm.takeOrder,
@@ -59793,11 +59794,6 @@ exports.push([module.i, "\ntr.activerow {\n  \t\tbackground: #123456  !important
 //
 //
 //
-//
-//
-//
-//
-//
 
 module.exports = {
   props: ["orders", "user", "showingPreparedOrders", "preparedOrders"],
@@ -59823,9 +59819,9 @@ module.exports = {
       this.currentOrder = order;
       this.$emit('take-order', order, this.user.id);
     },
-    deliverOrder: function deliverOrder(order) {
+    deliverOrder: function deliverOrder(order, index) {
       this.currentOrder = order;
-      this.$emit('deliver-order', order);
+      this.$emit('deliver-order', order, index);
     },
     //
     // Real Time
@@ -59883,7 +59879,7 @@ var render = function() {
         [
           _vm._l(_vm.preparedOrders, function(order, index) {
             return _vm.user.type == "manager" &&
-              _vm.showingPreparedOrders == false
+              _vm.showingPreparedOrders == true
               ? _c("tr", { key: order.id }, [
                   _c("td", [_vm._v(_vm._s(order.state))]),
                   _vm._v(" "),
@@ -59995,92 +59991,75 @@ var render = function() {
           _vm._v(" "),
           _vm._l(_vm.orders, function(order, index) {
             return _vm.user.type == "cook"
-              ? _c(
-                  "tr",
-                  {
-                    key: order.id,
-                    class: {
-                      activerow: _vm.currentOrder === order,
-                      newrow:
-                        _vm.tempStyleOrder === order && _vm.changeType == "new",
-                      changedrow:
-                        _vm.tempStyleOrder === order &&
-                        _vm.changeType == "changed",
-                      deletedrow:
-                        _vm.tempStyleOrder === order &&
-                        _vm.changeType == "deleted"
-                    }
-                  },
-                  [
-                    _c(
-                      "td",
-                      {
-                        class: {
-                          "text-danger initialism":
-                            order.state == "in preparation"
-                        }
-                      },
-                      [_vm._v(_vm._s(order.state))]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        class: {
-                          "text-danger initialism":
-                            order.state == "in preparation"
-                        }
-                      },
-                      [_vm._v(_vm._s(order.item))]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        class: {
-                          "text-danger initialism":
-                            order.state == "in preparation"
-                        }
-                      },
-                      [_vm._v(_vm._s(order.user))]
-                    ),
-                    _vm._v(" "),
-                    _c("td", [
-                      order.state == "in preparation"
-                        ? _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-xs btn-success",
-                              attrs: { title: "Declare meal prepared" },
-                              on: {
-                                click: function($event) {
-                                  _vm.declarePrepared(order)
-                                }
+              ? _c("tr", { key: order.id }, [
+                  _c(
+                    "td",
+                    {
+                      class: {
+                        "text-danger initialism":
+                          order.state == "in preparation"
+                      }
+                    },
+                    [_vm._v(_vm._s(order.state))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    {
+                      class: {
+                        "text-danger initialism":
+                          order.state == "in preparation"
+                      }
+                    },
+                    [_vm._v(_vm._s(order.item))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    {
+                      class: {
+                        "text-danger initialism":
+                          order.state == "in preparation"
+                      }
+                    },
+                    [_vm._v(_vm._s(order.user))]
+                  ),
+                  _vm._v(" "),
+                  _c("td", [
+                    order.state == "in preparation"
+                      ? _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-xs btn-success",
+                            attrs: { title: "Declare meal prepared" },
+                            on: {
+                              click: function($event) {
+                                _vm.declarePrepared(order)
                               }
-                            },
-                            [_c("i", { staticClass: "fas fa-check" })]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      order.state == "confirmed"
-                        ? _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-xs btn-primary",
-                              attrs: { title: "click to prepare this order" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  _vm.takeOrder(order)
-                                }
+                            }
+                          },
+                          [_c("i", { staticClass: "fas fa-check" })]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    order.state == "confirmed"
+                      ? _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-xs btn-primary",
+                            attrs: { title: "click to prepare this order" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                _vm.takeOrder(order)
                               }
-                            },
-                            [_c("i", { staticClass: "far fa-hand-paper" })]
-                          )
-                        : _vm._e()
-                    ])
-                  ]
-                )
+                            }
+                          },
+                          [_c("i", { staticClass: "far fa-hand-paper" })]
+                        )
+                      : _vm._e()
+                  ])
+                ])
               : _vm._e()
           })
         ],
@@ -61038,7 +61017,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61109,6 +61088,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.typeofmsg = "alert-success";
                 _this.message = "User authenticated correctly";
                 _this.showMessage = true;
+
+                //Escutar tipos de mensagens
+
+                _this.$socket.emit('user_enter', response.data.data);
             }).catch(function (error) {
                 _this.$store.commit('clearUserAndToken');
                 _this.typeofmsg = "alert-danger";
@@ -61353,7 +61336,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -61395,14 +61378,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             this.showMessage = false;
+            this.$socket.emit('user_exit', this.$store.state.user);
             axios.post('api/logout').then(function (response) {
+
                 _this.$store.commit('clearUserAndToken');
+
                 _this.typeofmsg = "alert-success";
                 _this.message = "User has logged out correctly";
                 _this.showMessage = true;
-                _this.$router.router.push('/');
             }).catch(function (error) {
                 _this.$store.commit('clearUserAndToken');
+                //this.$socket.emit('user_exit', this.$store.state.user);
                 _this.typeofmsg = "alert-danger";
                 _this.message = "Logout incorrect. But local credentials were discarded";
                 _this.showMessage = true;
@@ -62515,7 +62501,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -62659,19 +62645,26 @@ module.exports = {
     closeInvoice: function closeInvoice(invoice, index) {
       var _this6 = this;
 
-      axios.put("/api/closeInvoice/" + invoice.id).then(function (response) {
-        _this6.failMessage = '';
-        _this6.successMessage = 'Invoice closed with success!';
-        _this6.showFailure = false;
-        _this6.showSuccess = true;
-        _this6.invoices.splice(index, 1);
-        _this6.getInvoices();
-      }).catch(function (error) {
-        _this6.failMessage = 'Error while closing the invoice!';
-        _this6.successMessage = '';
-        _this6.showSuccess = false;
-        _this6.showFailure = true;
-      });
+      if (invoice.name != 'Not assigned' && invoice.nif != 'Not assigned') {
+        axios.put("/api/closeInvoice/" + invoice.id).then(function (response) {
+          _this6.failMessage = '';
+          _this6.successMessage = 'Invoice closed with success!';
+          _this6.showFailure = false;
+          _this6.showSuccess = true;
+          _this6.invoices.splice(index, 1);
+          _this6.getInvoicesPending();
+        }).catch(function (error) {
+          _this6.failMessage = 'Error while closing the invoice!';
+          _this6.successMessage = '';
+          _this6.showSuccess = false;
+          _this6.showFailure = true;
+        });
+      } else {
+        this.failMessage = 'You must fill the name and the nif before closing the invoice!';
+        this.successMessage = '';
+        this.showSuccess = false;
+        this.showFailure = true;
+      }
     }
   },
   mounted: function mounted() {
@@ -62989,29 +62982,25 @@ var render = function() {
               _c("td", [_vm._v(_vm._s(invoice.total_price))]),
               _vm._v(" "),
               _c("td", [
-                invoice.name != "Not assigned" &&
-                invoice.nif != "Not assigned" &&
-                _vm.user.type == "manager"
-                  ? _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-xs btn-success",
-                        attrs: { title: "Terminate Invocie" },
-                        on: {
-                          click: function($event) {
-                            _vm.closeInvoice(invoice, index)
-                          }
-                        }
-                      },
-                      [_c("i", { staticClass: "fas fa-check" })]
-                    )
-                  : _vm._e(),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-xs btn-success",
+                    attrs: { title: "Terminate Invocie" },
+                    on: {
+                      click: function($event) {
+                        _vm.closeInvoice(invoice, index)
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fas fa-check" })]
+                ),
                 _vm._v(" "),
                 _c(
                   "button",
                   {
                     staticClass: "btn btn-xs btn-primary",
-                    attrs: { title: "Terminate invoice" },
+                    attrs: { title: "edit invoice" },
                     on: {
                       click: function($event) {
                         _vm.editInvoice(invoice)

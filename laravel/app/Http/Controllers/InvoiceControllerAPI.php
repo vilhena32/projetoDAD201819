@@ -39,8 +39,8 @@ class InvoiceControllerAPI extends Controller
   }
 
   public function getPendingInvoices(){ //user id
-    return InvoiceResource::collection(Invoice::where('state','pending')->paginate(10)); //nao mostra nada 
-   //Return Invoice::where('state','paid')->toSql();
+    return InvoiceResource::collection(Invoice::where('state','pending')->paginate(10)); //nao mostra nada
+   // return Invoice::where('state','paid')->toSql();
   }
 
   public function getPaidInvoices(){ //user id

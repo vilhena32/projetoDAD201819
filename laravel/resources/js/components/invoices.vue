@@ -18,8 +18,8 @@
         <invoice-details :currentInvoice="currentInvoice" :invoiceItems="invoiceItems" v-if="showingInvoiceDetails" @back="cancelViewDetails"></invoice-details>
         <invoice-edit :currentInvoice="currentInvoice" v-if="showEditingInvoice" @edit-invoice="editInvoice" @cancel-edit="cancelEditInvoice"></invoice-edit>
       </div>
-  
-  
+
+
     </div>
 </template>
 
@@ -57,7 +57,7 @@ module.exports = {
       this.showFailure = true;
     })
     },
-    
+
     getInvoicesPending(page)
     {
       axios.get('/api/invoices/pending').then(response=>{
@@ -74,16 +74,16 @@ module.exports = {
 
     getInvoicesNotPaid(page)
     {
-      axios.get('/api/invoices/notpaid').then(response=>{
-      this.invoices = response.data.data;
-      this.page = response.data.meta.current_page;
-      this.last = response.data.meta.last_page;
-      this.total = response.data.meta.total;
+        axios.get('/api/invoices/notpaid').then(response=>{
+        this.invoices = response.data.data;
+        this.page = response.data.meta.current_page;
+        this.last = response.data.meta.last_page;
+        this.total = response.data.meta.total;
 
-    }).catch(error=>{
-      this.failMessage = 'Error while fetching all pending invoices';
-      this.showFailure = true;
-    })
+      }).catch(error=>{
+        this.failMessage = 'Error while fetching all pending invoices';
+        this.showFailure = true;
+      })
     },
 
     viewInvoiceDetails: function(invoice){
@@ -128,19 +128,27 @@ module.exports = {
       })
     },
     closeInvoice: function(invoice, index){
-      axios.put("/api/closeInvoice/"+invoice.id).then(response=>{
-        this.failMessage = '';
-        this.successMessage = 'Invoice closed with success!';
-        this.showFailure = false;
-        this.showSuccess = true;
-        this.invoices.splice(index, 1);
-        this.getInvoices();
-      }).catch(error=>{
-        this.failMessage = 'Error while closing the invoice!';
+      if(invoice.name != 'Not assigned' && invoice.nif != 'Not assigned'){
+        axios.put("/api/closeInvoice/"+invoice.id).then(response=>{
+          this.failMessage = '';
+          this.successMessage = 'Invoice closed with success!';
+          this.showFailure = false;
+          this.showSuccess = true;
+          this.invoices.splice(index, 1);
+          this.getInvoicesPending();
+        }).catch(error=>{
+          this.failMessage = 'Error while closing the invoice!';
+          this.successMessage = '';
+          this.showSuccess = false;
+          this.showFailure = true;
+        });
+      }else{
+        this.failMessage = 'You must fill the name and the nif before closing the invoice!';
         this.successMessage = '';
         this.showSuccess = false;
         this.showFailure = true;
-      });
+      }
+
     }
   },
   mounted(){

@@ -14,7 +14,7 @@
 
       <tbody>
 
-            <tr v-for="(order,index) in preparedOrders" v-if=" user.type == 'manager' && showingPreparedOrders == false" :key="order.id">
+            <tr v-for="(order,index) in preparedOrders" v-if=" user.type == 'manager' && showingPreparedOrders == true" :key="order.id">
                 <td>{{order.state}}</td>
                 <td>{{order.item}}</td>
                 <td>{{order.user}}</td>
@@ -49,12 +49,7 @@
           </tr>
 
 
-          <tr v-for="(order,index) in orders" v-if="user.type=='cook'":key="order.id" :class="{
-	        		activerow: currentOrder === order,
-	        		newrow: (tempStyleOrder === order) && (changeType == 'new'),
-	        		changedrow: (tempStyleOrder === order) && (changeType == 'changed'),
-	        		deletedrow: (tempStyleOrder === order) && (changeType == 'deleted')
-	        	}">
+          <tr v-for="(order,index) in orders" v-if="user.type=='cook'":key="order.id">
               <td :class="{'text-danger initialism': order.state=='in preparation'}">{{order.state}}</td>
               <td :class="{'text-danger initialism': order.state=='in preparation'}">{{order.item}}</td>
               <td :class="{'text-danger initialism': order.state=='in preparation'}">{{order.user}}</td>
@@ -95,9 +90,9 @@
         this.currentOrder = order;
         this.$emit('take-order', order, this.user.id);
       },
-      deliverOrder: function(order){
+      deliverOrder: function(order, index){
         this.currentOrder = order;
-        this.$emit('deliver-order', order);
+        this.$emit('deliver-order', order, index);
       },
       //
       // Real Time
