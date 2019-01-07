@@ -23,6 +23,7 @@ class User extends JsonResource
           'photo_url' => $this->photo_url,
           'blocked' => $this->blocked,
           'remember_token' => $this->remember_token,
+          'shift_active' =>$this->shift_active,
         ];
     }
 }

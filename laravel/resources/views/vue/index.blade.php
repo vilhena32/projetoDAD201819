@@ -10,6 +10,10 @@
    aria-expanded="false" aria-label="Toggle navigation">
    <span class="navbar-toggler-icon"></span>
  </button>
+
+ 
+  
+
  <div class="collapse navbar-collapse" id="navbarNav">
    <ul class="navbar-nav">
      <li class="nav-item active">
@@ -32,6 +36,14 @@
      </li>
      <li class="nav-item">
        <router-link class="nav-link" to="/invoices" v-if="this.$store.state.user != null && (this.$store.state.user.type == 'manager' || this.$store.state.user.type == 'cashier')">Invoices</router-link>
+     </li>
+     <li>
+     <button v-if="this.$store.state.user!= null && this.$store.state.user.shift_active" :v-bind="this.$store.state.user" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
+      Shift Started
+     </button>
+     <button v-if="this.$store.state.user!= null && !this.$store.state.user.shift_active" :v-bind="this.$store.state.user" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
+      Shiff Ended
+     </button>
      </li>
 
 

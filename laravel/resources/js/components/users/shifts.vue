@@ -10,6 +10,7 @@
       </div>
 
         <div class="container" align="center">
+            <strong>{{this.user.shift_active}}</strong>
             <button @click.prevent="activeShift(user)" :class="{'btn-success':user.shift_active, 'btn-warning':!user.shift_active}" class="btn btn.xs " >Iniciar/Terminar Turno</button>
         </div>
     </div>
@@ -24,7 +25,7 @@
                 successMessage: '',
                 failMessage: '',
 
-                user:[],
+                user:{},
             };
         },
         methods: {
@@ -44,6 +45,11 @@
                 this.failMessage = "Erro a iniciar/terminar turno!";
             });
             }
+        },
+        created()
+        {
+            this.user = this.$store.state.user;
+            console.log(this.user);
         }
     };
 </script>

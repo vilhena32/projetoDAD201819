@@ -73,12 +73,13 @@
 
         updateUser(user)
         {
-            axios.put('api/users/'+user.id, user).then(response=>{
+            axios.put('api/users/'+this.$store.state.user.id, user).then(response=>{
             this.showSuccess = true;
+            console.log(response);
             // this.showFailure = false;
             this.successMessage = "Utilizador atualizado com sucesso!";
 				
-			})
+            });
         }
      
     },
