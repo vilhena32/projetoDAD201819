@@ -5,7 +5,7 @@
   </div>
 
   <div class="container">
-  <button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter' ||this.$store.state.user.type=='cook' " @click="showPreparedOrders">Show prepared orders</button>
+  <button class="btn btn-primary" v-if="!showingPreparedOrders && this.$store.state.user.type=='waiter'" @click="showPreparedOrders">Show prepared orders</button>
     <button class="btn btn-primary" v-if="showingPreparedOrders" @click="cancelShowPreparedOrders">Show orders</button>
     <button class="btn btn-success" v-if="this.$store.state.user.type=='waiter'" @click="showAddOrder">Add order</button>
     <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
@@ -13,9 +13,9 @@
         <strong>{{successMessage}}</strong>
         <strong>{{failMessage}}</strong>
     </div>
-    <order-list :showingPreparedOrders="showingPreparedOrders" :preparedOrders="preparedOrders" :user="this.$store.state.user" :orders="orders" :deliver-order="changeOrderState"
+    <order-list :showingPreparedOrders="showingPreparedOrders" :preparedOrders="preparedOrders" :user="this.$store.state.user" :orders="orders" @deliver-order="changeOrderState"
     v-if="showingOrders"
-    :delete-order="deleteOrder" :take-order="takeOrder" :prepare-order="changeOrderState"></order-list>
+    @delete-order="deleteOrder" @take-order="takeOrder" @prepare-order="changeOrderState"></order-list>
     <add-order :items="items" :currentOrder="currentOrder" :meals="meals" v-if="showingAddOrders" @cancel-add="cancelAddOrder" @add-order="addOrder"></add-order>
   </div>
   <!-- @getOrdersParent="getOrdersP" -->
@@ -124,7 +124,7 @@
 
             axios.get('/api/getpreparedorders/'+this.$store.state.user.id)
             .then(response=>{
-              this.orders = response.data.data;
+              this.preparedOrders = response.data.data;
               // this.page = response.data.meta.current_page;
               // this.last = response.data.meta.last_page;
               // this.total = response.data.meta.total;
@@ -182,7 +182,7 @@
       this.showingPreparedOrders = true;
       this.showingOrders = false;
       if(this.preparedOrders.length == 0){
-        this.getPreparedOrders(1);
+        this.getPreparedOrders();
       }
       this.showingOrders = true;
     },
@@ -191,7 +191,7 @@
       this.showingPreparedOrders = false;
 
       this.getOrders();
-      
+
       this.showingOrders = true;
 
     },
@@ -256,11 +256,12 @@
           this.failMessage = 'Error while associating this order to you!'
         });
     },
-    changeOrderState: function(order){
+    changeOrderState: function(order, index){
         axios.put('/api/orderstate/'+order.id).then(response=>{
           this.showSuccess = true;
           this.successMessage = 'Order state changed successfuly!'
           this.getOrders();
+          this.getPreparedOrders();
         }).catch(error=>{
           this.showFailure = true;
           this.failMessage = 'Error while changing order state!'

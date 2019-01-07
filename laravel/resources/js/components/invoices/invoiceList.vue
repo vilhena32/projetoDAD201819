@@ -16,8 +16,8 @@
               <td>{{invoice.table_number}}</td>
               <td>{{invoice.total_price}}</td>
               <td>
-                  <button v-on:click="closeInvoice(invoice, index)" class="btn btn-xs btn-success" title="Terminate Invocie" v-if="invoice.name != 'Not assigned' && invoice.nif != 'Not assigned' && user.type == 'manager'"><i class="fas fa-check"></i></button>
-                  <button v-on:click="editInvoice(invoice)" class="btn btn-xs btn-primary" title="Terminate invoice"><i class="fas fa-pencil-alt"></i></button>
+                  <button v-on:click="closeInvoice(invoice, index)" class="btn btn-xs btn-success" title="Terminate Invocie"><i class="fas fa-check"></i></button>
+                  <button v-on:click="editInvoice(invoice)" class="btn btn-xs btn-primary" title="edit invoice"><i class="fas fa-pencil-alt"></i></button>
                   <button  v-on:click.prevent="viewInvocie(invoice)" class="btn btn-xs btn-primary" title="View invoice details"><i class="far fa-eye"></i></button>
               </td>
           </tr>
@@ -31,7 +31,7 @@ module.exports = {
 
   props:["invoices", "user"],
   methods: {
-   
+
     viewInvocie: function(invoice){
       this.$emit('view-invoice', invoice);
     },
