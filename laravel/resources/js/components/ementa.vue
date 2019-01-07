@@ -156,12 +156,7 @@
 
         }
       });
-      //}
-
-
-
-
-
+  
     },
     created(){
       if(this.$store.state.user == null){

@@ -81,7 +81,9 @@ Route::get('allMeals', 'MealControllerAPI@getAllMeals');
 
 #----- Invocies
 Route::post('invoices/{id}','InvoiceControllerAPI@create');
-Route::get('invoices','InvoiceControllerAPI@getPendingInvoices');
+Route::get('invoices/pending','InvoiceControllerAPI@getPendingInvoices');
+Route::get('invoices/paid','InvoiceControllerAPI@getPaidInvoices');
+Route::get('invoices/notpaid','InvoiceControllerAPI@getNotPaidInvoices');
 Route::put('invoices/{id}', 'InvoiceControllerAPI@update');
 Route::put('closeInvoice/{id}','InvoiceControllerAPI@closeInvoice');
 

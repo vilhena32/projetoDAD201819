@@ -5,6 +5,10 @@
     </div>
 
       <div class="container">
+      <button class="btn btn-primary" @click.prevent="getInvoicesPending(1)" v-if="showingInvoices" >Pending Invoices</button>
+      <button class="btn btn-primary" @click.prevent="getInvoicesNotPaid(1)" v-if="showingInvoices" >Not Paid Invoices</button>
+      <button class="btn btn-primary" @click.prevent="getInvoicesPaid(1)" v-if="showingInvoices" >Paid Invoices</button>
+
         <div class=" alert" v-bind:class="{'alert-success':showSuccess, 'alert-danger':showFailure}" v-if="showSuccess || showFailure">
             <button type="button" @click = "showSuccess = false; showFailure = false;" class="close-btn" >&times;</button>
             <strong>{{successMessage}}</strong>
@@ -14,7 +18,8 @@
         <invoice-details :currentInvoice="currentInvoice" :invoiceItems="invoiceItems" v-if="showingInvoiceDetails" @back="cancelViewDetails"></invoice-details>
         <invoice-edit :currentInvoice="currentInvoice" v-if="showEditingInvoice" @edit-invoice="editInvoice" @cancel-edit="cancelEditInvoice"></invoice-edit>
       </div>
-
+  
+  
     </div>
 </template>
 
@@ -39,9 +44,9 @@ module.exports = {
     }
   },
   methods: {
-    getInvoices(page)
+    getInvoicesPaid(page)
     {
-      axios.get('/api/invoices').then(response=>{
+      axios.get('/api/invoices/paid').then(response=>{
       this.invoices = response.data.data;
       this.page = response.data.meta.current_page;
       this.last = response.data.meta.last_page;
@@ -52,6 +57,35 @@ module.exports = {
       this.showFailure = true;
     })
     },
+    
+    getInvoicesPending(page)
+    {
+      axios.get('/api/invoices/pending').then(response=>{
+      this.invoices = response.data.data;
+      this.page = response.data.meta.current_page;
+      this.last = response.data.meta.last_page;
+      this.total = response.data.meta.total;
+
+    }).catch(error=>{
+      this.failMessage = 'Error while fetching all pending invoices';
+      this.showFailure = true;
+    })
+    },
+
+    getInvoicesNotPaid(page)
+    {
+      axios.get('/api/invoices/notpaid').then(response=>{
+      this.invoices = response.data.data;
+      this.page = response.data.meta.current_page;
+      this.last = response.data.meta.last_page;
+      this.total = response.data.meta.total;
+
+    }).catch(error=>{
+      this.failMessage = 'Error while fetching all pending invoices';
+      this.showFailure = true;
+    })
+    },
+
     viewInvoiceDetails: function(invoice){
       this.currentInvoice = invoice;
       axios.get("/api/invoiceItems/"+invoice.id).then(response=>{
@@ -111,7 +145,7 @@ module.exports = {
   },
   mounted(){
     //http://projeto.dad/api/invoices?page=1
-    this.getInvoices(1);
+    this.getInvoicesPending(1);
   }
 }
 </script>
