@@ -60,6 +60,16 @@ io.on('connection', function (socket) {
     //   }
     // });
     //
+    socket.on('privateMessage',  (msg, sourceUser, destUser)=> {
+		    let userInfo = loggedUsers.userInfoByID(destUser.id);
+		      let socket_id = userInfo !== undefined ? userInfo.socketID : null;
+		        if (socket_id === null) {
+			           socket.emit('privateMessage_unavailable', destUser);
+		        } else {
+			              io.to(socket_id).emit('privateMessage', msg, sourceUser);
+			              socket.emit('privateMessage_sent', msg, destUser);
+		          }
+	});
     // socket.on('private_message', (msg, to, from)=>{
     //   const userInfo = loggedUsers.userInfoBy(to.id);
     //   if(userInfo){

@@ -42,6 +42,7 @@ Route::get('allItems', 'ItemsControllerAPI@getAllItems');
 
 #------ Users
 Route::get('users', 'UsersControllerAPI@index');
+Route::get('managers', 'UsersControllerAPI@managerListing');
 Route::get('users/emailavailable', 'UsersControllerAPI@emailAvailable');
 Route::get('user/{token}','UsersControllerAPI@getUserByToken');
 Route::get('users/{id}', 'UsersControllerAPI@show');

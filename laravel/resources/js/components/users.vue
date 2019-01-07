@@ -3,7 +3,7 @@
     <div class="jumbotron">
         <h1 align="center">{{title}}</h1>
     </div>
-    <div class="container">
+    <div class="container" v-if="authUser.type == 'manager'">
       <button class="btn btn-primary" @click.prevent="showUsers" v-if="!showingUsers" >Mostrar utilizadores</button>
       <button class="btn btn-primary" @click.prevent="showUsers" v-if="showingUsers">Fechar utilizadores</button>
       <button class="btn btn-primary" @click.prevent="showBlockedUsers" v-if="showingUsers">Mostrar Utilizadores Bloqueados</button>
@@ -36,6 +36,10 @@
       </div>
     </div>
 
+    <div class="container" v-if="authUser.type!='manager'">
+
+    </div>
+
   </div>
 
 </template>
@@ -48,6 +52,7 @@
         return{
         title: 'Users',
         users: [],
+        authUser: {},
         editingUser: false,
         showingUsers: true,
         addingUser: false,
@@ -74,7 +79,7 @@
       {
         	axios.get('api/blockedUsers')
 				  .then(response => {
-            
+
             this.users = response.data.data;
           console.log(response);
 
@@ -85,7 +90,7 @@
       {
         	axios.get('api/unblockedUsers')
 				  .then(response => {
-            
+
             this.users = response.data.data;
           console.log(response);
 
@@ -95,9 +100,9 @@
       getResults() {
           axios.get('api/users')
 				  .then(response => {
-           
+
             this.users = response.data.data;
-          
+
 
 				  });
 		    },
@@ -125,13 +130,13 @@
         },
 
         blockUser: function(user){
-          
+
             //fazer verificação de quem está online, e retirar o acesso a bloquear-se
             axios.put('api/users/blocked/'+user.id, user).then(response=>{
                 this.showSuccess = true;
                 this.successMessage = "Utilizador bloqueado com sucesso!";
                 this.getResults();
-                
+
            /*     this.users.forEach(u =>{
               if(u.id == this.currentUser.id){
                 Object.assign(u,response.data.data);
@@ -144,7 +149,7 @@
             this.failMessage = "Erro ao bloquear o utilizador!"
             });
         },
-        
+
 
         // activeUserShift: function(){
         //     const shiftUser = this.currentUser;
@@ -224,11 +229,19 @@
       });
         }
     },
+    created()
+    {
+        if(this.$store.state.user!=null)
+        {
+            console.log(this.$store.state.user);
+            this.authUser=this.$store.state.user;
+        }
+
+
+    },
     beforeMount() {
       this.getResults();
     }
   }
 
 </script>
-
-

@@ -46,6 +46,7 @@ const userListComponent = Vue.component('user-list', require('./components/users
 const editUserComponent = Vue.component('user-edit', require('./components/users/editUser'));
 const addUserComponent = Vue.component('user-add', require('./components/users/addUser'));
 const showProfileComponent = Vue.component('user-show', require('./components/users/showProfile'));
+const managerListComponent = Vue.component('manager-list', require('./components/users/managerList'));
 //orders
 const orders = Vue.component('orders',require('./components/orders'));
 const orderListComponent = Vue.component('order-list', require('./components/orders/orderList'));
@@ -78,6 +79,7 @@ const routes = [
   {path:'/editItem', component:editItemComponent},
   {path:'/users', component:users},
   {path:'/userlist', component:userListComponent},
+  {path:'/managerList', component:managerListComponent},
   {path:'/edituser', component:editUserComponent,
   beforeEnter (to,from, next)
   {
@@ -170,6 +172,16 @@ const app = new Vue({
       order_changed(dataFromServer){
           this.$toasted.show('Order with: ID= ' + dataFromServer.id + ') has changed');
       },
+      privateMessage(dataFromServer){
+            let sourceName = dataFromServer[1] === null ? 'Unknown': dataFromServer[1].name;
+            this.$toasted.show('Message "' + dataFromServer[0] + '" sent from "' + sourceName + '"');
+        },
+        privateMessage_unavailable(destUser){
+            this.$toasted.error('User "' + destUser.name + '" is not available');
+        },
+        privateMessage_sent(dataFromServer){
+            this.$toasted.success('Message "' + dataFromServer[0] + '" was sent to "' + dataFromServer[1].name + '"');
+        },
     },
     created(){
       this.$store.commit('loadTokenAndUserFromSession');
@@ -178,5 +190,5 @@ const app = new Vue({
       this.$store.commit('loadTokenAndUserFromSession');
       console.log(jsPDF);
     }
-   
+
 }).$mount('#app');
