@@ -119,8 +119,19 @@ io.on('connection', function (socket) {
         if (user !== undefined && user !== null)
         {
             socket.join('notifications');
+            socket.join('notifications_'+user.type);
+
             loggedUsers.addUserInfo(user, socket.id);
+            let msg= "Hello!!!";
+            console.log(msg);
             console.log('User ' + user.name + ' has join notifications' );
+            if(user.type!='manager')
+            {
+                msg = user.name + 'has joined ' + user.type+'s';
+                io.sockets.to('notifications_manager').emit('notifications_manager_msg', msg);
+
+            }
+            console.log(user);
         }
 
     });
